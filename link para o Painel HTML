@@ -1,0 +1,565 @@
+https://claude.ai/public/artifacts/496ddee3-75fb-4928-a82b-8da2f1265e58
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Vendas — Gestão de Loja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0c0e14;
+  --panel:#151824;
+  --panel-2:#1b1f2e;
+  --line:#262b3d;
+  --text:#eef0f6;
+  --text-dim:#8b91a7;
+  --text-faint:#5c6178;
+  --accent:#3ddc97;
+  --accent-dim:rgba(61,220,151,0.14);
+  --accent-2:#5b8cff;
+  --accent-2-dim:rgba(91,140,255,0.14);
+  --warn:#ff8a5b;
+  --danger:#ff5c7a;
+  --radius:14px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(61,220,151,0.06), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(91,140,255,0.05), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:'Manrope', -apple-system, sans-serif;
+  min-height:100vh;
+  padding: 22px 22px 60px;
+}
+.mono{font-family:'JetBrains Mono', monospace;}
+
+/* Header */
+.header{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:20px; flex-wrap:wrap; gap:14px;
+}
+.brand{display:flex; align-items:center; gap:12px;}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800; color:#08110d; font-size:16px;
+}
+.brand-text h1{font-size:17px; font-weight:700; letter-spacing:0.2px;}
+.brand-text span{font-size:12px; color:var(--text-dim);}
+.header-right{display:flex; align-items:center; gap:10px;}
+.pill{
+  font-size:12px; color:var(--text-dim); background:var(--panel);
+  border:1px solid var(--line); padding:7px 12px; border-radius:100px;
+  display:flex; align-items:center; gap:6px;
+}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent); box-shadow:0 0 8px var(--accent);}
+
+/* Filters bar */
+.filters{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 18px;
+  margin-bottom:20px;
+  display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap;
+}
+.filter-group{display:flex; flex-direction:column; gap:6px; min-width:170px; flex:1;}
+.filter-group label{
+  font-size:11px; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--text-faint); font-weight:600;
+}
+select{
+  background:var(--panel-2); color:var(--text);
+  border:1px solid var(--line); border-radius:9px;
+  padding:9px 11px; font-family:inherit; font-size:13.5px;
+  outline:none; cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%238b91a7'/></svg>");
+  background-repeat:no-repeat; background-position:right 12px center;
+  padding-right:30px;
+  transition:border-color .15s;
+}
+select:hover, select:focus{border-color:var(--accent);}
+.btn-reset{
+  background:transparent; color:var(--text-dim); border:1px solid var(--line);
+  border-radius:9px; padding:9px 14px; font-size:13px; cursor:pointer;
+  font-family:inherit; white-space:nowrap;
+  transition:all .15s;
+}
+.btn-reset:hover{border-color:var(--danger); color:var(--danger);}
+.active-tags{display:flex; gap:6px; flex-wrap:wrap; width:100%; margin-top:2px;}
+.tag{
+  font-size:11.5px; background:var(--accent-dim); color:var(--accent);
+  border:1px solid rgba(61,220,151,0.3); padding:4px 10px; border-radius:100px;
+  display:flex; align-items:center; gap:6px;
+}
+.tag button{background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;line-height:1;padding:0;}
+
+/* KPI grid */
+.kpi-grid{
+  display:grid; grid-template-columns:repeat(6, 1fr); gap:14px; margin-bottom:20px;
+}
+.kpi-card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px 18px; position:relative; overflow:hidden;
+}
+.kpi-card .label{font-size:11.5px; color:var(--text-dim); font-weight:600; margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+.kpi-card .value{font-size:22px; font-weight:700; font-family:'JetBrains Mono',monospace; letter-spacing:-0.5px;}
+.kpi-card .sub{font-size:11.5px; color:var(--text-faint); margin-top:6px;}
+.kpi-card.accent{border-color:rgba(61,220,151,0.25); background:linear-gradient(160deg, rgba(61,220,151,0.07), var(--panel) 60%);}
+
+/* Grid layout */
+.grid{display:grid; grid-template-columns:1.6fr 1fr; gap:16px; margin-bottom:16px;}
+.grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;}
+
+.panel{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  padding:18px 20px;
+}
+.panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+.panel-head h3{font-size:14px; font-weight:700;}
+.panel-head .legend{display:flex; gap:12px; font-size:11.5px; color:var(--text-dim);}
+.legend span{display:flex; align-items:center; gap:5px;}
+.legend i{width:9px;height:9px;border-radius:3px; display:inline-block;}
+.chart-wrap{position:relative; height:260px;}
+.chart-wrap.tall{height:320px;}
+
+/* Table */
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+thead th{
+  text-align:left; color:var(--text-faint); font-weight:600; font-size:10.5px;
+  text-transform:uppercase; letter-spacing:0.05em; padding:0 10px 10px; border-bottom:1px solid var(--line);
+}
+tbody td{padding:10px 10px; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--text);}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody td.num{font-family:'JetBrains Mono',monospace; text-align:right;}
+.rank{
+  width:20px; height:20px; border-radius:6px; background:var(--panel-2);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:10.5px; color:var(--text-dim); margin-right:8px; font-family:'JetBrains Mono',monospace;
+}
+.bar-mini{height:5px; border-radius:3px; background:var(--panel-2); overflow:hidden; margin-top:4px;}
+.bar-mini i{display:block; height:100%; background:linear-gradient(90deg, var(--accent-2), var(--accent));}
+
+.up{color:var(--accent);}
+.down{color:var(--danger);}
+
+.empty-state{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:200px; color:var(--text-faint); font-size:13px; gap:8px;
+}
+
+footer{text-align:center; color:var(--text-faint); font-size:11.5px; margin-top:26px;}
+
+@media (max-width:1100px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr);}
+  .grid, .grid-3, .grid-2{grid-template-columns:1fr;}
+}
+@media (max-width:640px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <div class="brand-mark">KPI</div>
+    <div class="brand-text">
+      <h1>Painel de Vendas</h1>
+      <span>Gestão estratégica &middot; atualizado em tempo real</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="pill"><span class="dot"></span> <span id="periodLabel">Jan – Dez 2025</span></div>
+    <div class="pill" id="recCount">100 vendas</div>
+  </div>
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>Categoria</label>
+    <select id="f-categoria"><option value="">Todas</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Produto</label>
+    <select id="f-produto"><option value="">Todos</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Região</label>
+    <select id="f-regiao"><option value="">Todas</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Marca</label>
+    <select id="f-marca"><option value="">Todas</option></select>
+  </div>
+  <button class="btn-reset" id="btnReset">Limpar filtros</button>
+  <div class="active-tags" id="activeTags"></div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card accent">
+    <div class="label">Faturamento Total</div>
+    <div class="value" id="kpiFaturamento">—</div>
+    <div class="sub" id="kpiFaturamentoSub">—</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Lucro Total</div>
+    <div class="value" id="kpiLucro">—</div>
+    <div class="sub" id="kpiLucroSub">—</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Margem de Lucro %</div>
+    <div class="value" id="kpiMargem">—</div>
+    <div class="sub">Média ponderada do período</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Ticket Médio</div>
+    <div class="value" id="kpiTicket">—</div>
+    <div class="sub">Por transação</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Custo Total</div>
+    <div class="value" id="kpiCusto">—</div>
+    <div class="sub">Produtos vendidos</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Qtd. Vendida</div>
+    <div class="value" id="kpiQtd">—</div>
+    <div class="sub" id="kpiQtdSub">—</div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Faturamento &amp; Lucro por Mês</h3>
+      <div class="legend">
+        <span><i style="background:var(--accent)"></i>Faturamento</span>
+        <span><i style="background:var(--accent-2)"></i>Lucro</span>
+      </div>
+    </div>
+    <div class="chart-wrap tall"><canvas id="chartTrend"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Vendas por Canal</h3>
+    </div>
+    <div class="chart-wrap tall"><canvas id="chartCanal"></canvas></div>
+  </div>
+</div>
+
+<div class="grid-3">
+  <div class="panel">
+    <div class="panel-head"><h3>Vendas por Região</h3></div>
+    <div class="chart-wrap"><canvas id="chartRegiao"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Margem por Categoria</h3></div>
+    <div class="chart-wrap"><canvas id="chartCategoria"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Perfil por Faixa Etária</h3></div>
+    <div class="chart-wrap"><canvas id="chartFaixa"></canvas></div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <div class="panel-head"><h3>Top 5 Produtos (Margem)</h3></div>
+    <table>
+      <thead><tr><th></th><th>Produto</th><th style="text-align:right">Margem</th><th style="text-align:right">Faturamento</th></tr></thead>
+      <tbody id="tblTopProdutos"></tbody>
+    </table>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h3>Top 5 Clientes</h3></div>
+    <table>
+      <thead><tr><th></th><th>Cliente</th><th style="text-align:right">Compras</th><th style="text-align:right">Total Gasto</th></tr></thead>
+      <tbody id="tblTopClientes"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel" style="margin-bottom:16px;">
+  <div class="panel-head"><h3>Produtos com Menor Margem</h3></div>
+  <table>
+    <thead><tr><th>Produto</th><th>Categoria</th><th>Marca</th><th style="text-align:right">Margem %</th><th style="text-align:right">Faturamento</th></tr></thead>
+    <tbody id="tblLowMargin"></tbody>
+  </table>
+</div>
+
+<footer>Painel gerado a partir de fato_vendas, dim_produto, dim_regiao, dim_cliente e dim_calendario &middot; Dados de 2025</footer>
+
+<script>
+const RAW_DATA = [{"venda_id": 1, "data": "2025-01-01", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Bola de Futebol Campo", "categoria": "Equipamentos", "marca": "Nike", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Henrique Dias", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 5, "valor_unitario": 161.42, "valor_total": 807.1, "custo_total": 499.5, "margem_valor": 307.6, "margem_pct": 38.11}, {"venda_id": 2, "data": "2025-01-13", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Bola de Futebol Campo", "categoria": "Equipamentos", "marca": "Nike", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "Bruno Lima", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 2, "valor_unitario": 170.91, "valor_total": 341.82, "custo_total": 199.8, "margem_valor": 142.02, "margem_pct": 41.55}, {"venda_id": 3, "data": "2025-01-15", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Chuteira Society Speed", "categoria": "Calçados", "marca": "Puma", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Ana Souza", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 4, "valor_unitario": 299.9, "valor_total": 1199.6, "custo_total": 639.6, "margem_valor": 560.0, "margem_pct": 46.68}, {"venda_id": 4, "data": "2025-01-21", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Vinícius Araújo", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 59.9, "valor_total": 179.7, "custo_total": 83.7, "margem_valor": 96.0, "margem_pct": 53.42}, {"venda_id": 5, "data": "2025-01-23", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Colete Refletivo Corrida", "categoria": "Acessórios", "marca": "Nike", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Bruno Lima", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 69.9, "valor_total": 69.9, "custo_total": 29.9, "margem_valor": 40.0, "margem_pct": 57.22}, {"venda_id": 6, "data": "2025-01-26", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Legging Fitness Feminina", "categoria": "Vestuário", "marca": "Adidas", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Giovana Reis", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 129.9, "valor_total": 649.5, "custo_total": 299.5, "margem_valor": 350.0, "margem_pct": 53.89}, {"venda_id": 7, "data": "2025-01-26", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Bola de Basquete Oficial", "categoria": "Equipamentos", "marca": "Wilson", "regiao": "Centro-Oeste", "estado": "DF", "cidade": "Brasília", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Fábio Ramos", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 219.9, "valor_total": 1099.5, "custo_total": 599.5, "margem_valor": 500.0, "margem_pct": 45.48}, {"venda_id": 8, "data": "2025-01-27", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Bicicleta Mountain Bike Aro 29", "categoria": "Equipamentos", "marca": "Oggi", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "Giovana Reis", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 1, "valor_unitario": 3044.9, "valor_total": 3044.9, "custo_total": 1899.9, "margem_valor": 1145.0, "margem_pct": 37.6}, {"venda_id": 9, "data": "2025-01-30", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Chuteira Campo Elite", "categoria": "Calçados", "marca": "Nike", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Henrique Dias", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 1, "valor_unitario": 441.92, "valor_total": 441.92, "custo_total": 289.9, "margem_valor": 152.02, "margem_pct": 34.4}, {"venda_id": 10, "data": "2025-01-30", "mes_nome": "Janeiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Tênis Caminhada Comfort", "categoria": "Calçados", "marca": "Olympikus", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Nelson Cardoso", "genero": "Feminino", "faixa_etaria": "45-54", "quantidade": 5, "valor_unitario": 219.9, "valor_total": 1099.5, "custo_total": 599.5, "margem_valor": 500.0, "margem_pct": 45.48}, {"venda_id": 11, "data": "2025-02-01", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Mariana Teixeira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 83.9, "valor_total": 335.6, "custo_total": 139.6, "margem_valor": 196.0, "margem_pct": 58.4}, {"venda_id": 12, "data": "2025-02-05", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Camiseta Dry Fit", "categoria": "Vestuário", "marca": "Under Armour", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Olívia Santos", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 89.9, "valor_total": 449.5, "custo_total": 199.5, "margem_valor": 250.0, "margem_pct": 55.62}, {"venda_id": 13, "data": "2025-02-05", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Faixa de Resistência Elástica", "categoria": "Acessórios", "marca": "Athix", "regiao": "Centro-Oeste", "estado": "DF", "cidade": "Brasília", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Fábio Ramos", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 39.9, "valor_total": 119.7, "custo_total": 44.7, "margem_valor": 75.0, "margem_pct": 62.66}, {"venda_id": 14, "data": "2025-02-17", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Barra de Musculação 1,80m", "categoria": "Equipamentos", "marca": "Athix", "regiao": "Nordeste", "estado": "CE", "cidade": "Fortaleza", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Danilo Freitas", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 2, "valor_unitario": 367.4, "valor_total": 734.8, "custo_total": 399.8, "margem_valor": 335.0, "margem_pct": 45.59}, {"venda_id": 15, "data": "2025-02-19", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Nordeste", "estado": "PE", "cidade": "Recife", "canal_venda": "E-commerce", "forma_pagamento": "Boleto", "nome_cliente": "Queila Fernandes", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 4, "valor_unitario": 79.9, "valor_total": 319.6, "custo_total": 139.6, "margem_valor": 180.0, "margem_pct": 56.32}, {"venda_id": 16, "data": "2025-02-24", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Whey Protein 900g", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sudeste", "estado": "RJ", "cidade": "Rio de Janeiro", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Marcelo Tavares", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 149.9, "valor_total": 599.6, "custo_total": 319.6, "margem_valor": 280.0, "margem_pct": 46.7}, {"venda_id": 17, "data": "2025-02-25", "mes_nome": "Fevereiro", "trimestre": "Q1", "ano": 2025, "nome_produto": "Bicicleta Speed Aro 700", "categoria": "Equipamentos", "marca": "Caloi", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "Mariana Teixeira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 5, "valor_unitario": 2969.91, "valor_total": 14849.55, "custo_total": 10999.5, "margem_valor": 3850.05, "margem_pct": 25.93}, {"venda_id": 18, "data": "2025-03-03", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Skate Completo Street", "categoria": "Equipamentos", "marca": "Progress", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Eduarda Melo", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 449.9, "valor_total": 2249.5, "custo_total": 1299.5, "margem_valor": 950.0, "margem_pct": 42.23}, {"venda_id": 19, "data": "2025-03-10", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Creatina 300g", "categoria": "Suplementos", "marca": "Max Titanium", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Ximena Rezende", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 99.9, "valor_total": 299.7, "custo_total": 149.7, "margem_valor": 150.0, "margem_pct": 50.05}, {"venda_id": 20, "data": "2025-03-10", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Colete Refletivo Corrida", "categoria": "Acessórios", "marca": "Nike", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Zeca Monteiro", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 4, "valor_unitario": 73.4, "valor_total": 293.6, "custo_total": 119.6, "margem_valor": 174.0, "margem_pct": 59.26}, {"venda_id": 21, "data": "2025-03-12", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Giovana Reis", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 2, "valor_unitario": 59.9, "valor_total": 119.8, "custo_total": 55.8, "margem_valor": 64.0, "margem_pct": 53.42}, {"venda_id": 22, "data": "2025-03-13", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Óculos de Natação", "categoria": "Acessórios", "marca": "Speedo", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "E-commerce", "forma_pagamento": "Boleto", "nome_cliente": "Lucas Martins", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 4, "valor_unitario": 89.9, "valor_total": 359.6, "custo_total": 159.6, "margem_valor": 200.0, "margem_pct": 55.62}, {"venda_id": 23, "data": "2025-03-21", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Creatina 300g", "categoria": "Suplementos", "marca": "Max Titanium", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Ximena Rezende", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 2, "valor_unitario": 99.9, "valor_total": 199.8, "custo_total": 99.8, "margem_valor": 100.0, "margem_pct": 50.05}, {"venda_id": 24, "data": "2025-03-22", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Barra de Proteína (cx 12un)", "categoria": "Suplementos", "marca": "Growth", "regiao": "Nordeste", "estado": "CE", "cidade": "Fortaleza", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Danilo Freitas", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 4, "valor_unitario": 79.9, "valor_total": 319.6, "custo_total": 159.6, "margem_valor": 160.0, "margem_pct": 50.06}, {"venda_id": 25, "data": "2025-03-24", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Bola de Futebol Campo", "categoria": "Equipamentos", "marca": "Nike", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Henrique Dias", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 161.42, "valor_total": 645.68, "custo_total": 399.6, "margem_valor": 246.08, "margem_pct": 38.11}, {"venda_id": 26, "data": "2025-03-27", "mes_nome": "Março", "trimestre": "Q1", "ano": 2025, "nome_produto": "Tênis Caminhada Comfort", "categoria": "Calçados", "marca": "Olympikus", "regiao": "Sudeste", "estado": "RJ", "cidade": "Rio de Janeiro", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Débito", "nome_cliente": "João Barbosa", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 4, "valor_unitario": 197.91, "valor_total": 791.64, "custo_total": 479.6, "margem_valor": 312.04, "margem_pct": 39.42}, {"venda_id": 27, "data": "2025-04-12", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Tênis Trail Runner", "categoria": "Calçados", "marca": "Adidas", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Giovana Reis", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 2, "valor_unitario": 399.9, "valor_total": 799.8, "custo_total": 439.8, "margem_valor": 360.0, "margem_pct": 45.01}, {"venda_id": 28, "data": "2025-04-15", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Barra de Proteína (cx 12un)", "categoria": "Suplementos", "marca": "Growth", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "Rafael Gomes", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 3, "valor_unitario": 67.92, "valor_total": 203.76, "custo_total": 119.7, "margem_valor": 84.06, "margem_pct": 41.25}, {"venda_id": 29, "data": "2025-04-16", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Regata Treino Masculina", "categoria": "Vestuário", "marca": "Nike", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Nelson Cardoso", "genero": "Feminino", "faixa_etaria": "45-54", "quantidade": 4, "valor_unitario": 62.91, "valor_total": 251.64, "custo_total": 119.6, "margem_valor": 132.04, "margem_pct": 52.47}, {"venda_id": 30, "data": "2025-04-19", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Whey Protein 900g", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Ximena Rezende", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 157.4, "valor_total": 787.0, "custo_total": 399.5, "margem_valor": 387.5, "margem_pct": 49.24}, {"venda_id": 31, "data": "2025-04-20", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Óculos de Natação", "categoria": "Acessórios", "marca": "Speedo", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Felipe Cavalcante", "genero": "Masculino", "faixa_etaria": "35-44", "quantidade": 5, "valor_unitario": 89.9, "valor_total": 449.5, "custo_total": 199.5, "margem_valor": 250.0, "margem_pct": 55.62}, {"venda_id": 32, "data": "2025-04-26", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Bola de Vôlei Profissional", "categoria": "Equipamentos", "marca": "Mikasa", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Larissa Pinheiro", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 1, "valor_unitario": 249.9, "valor_total": 249.9, "custo_total": 139.9, "margem_valor": 110.0, "margem_pct": 44.02}, {"venda_id": 33, "data": "2025-04-28", "mes_nome": "Abril", "trimestre": "Q2", "ano": 2025, "nome_produto": "Jaqueta Corta-Vento", "categoria": "Vestuário", "marca": "The North Face", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Bernardo Vieira", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 349.9, "valor_total": 349.9, "custo_total": 189.9, "margem_valor": 160.0, "margem_pct": 45.73}, {"venda_id": 34, "data": "2025-05-03", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Bicicleta Mountain Bike Aro 29", "categoria": "Equipamentos", "marca": "Oggi", "regiao": "Centro-Oeste", "estado": "DF", "cidade": "Brasília", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Fábio Ramos", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 2609.91, "valor_total": 7829.73, "custo_total": 5699.7, "margem_valor": 2130.03, "margem_pct": 27.2}, {"venda_id": 35, "data": "2025-05-05", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Kit Halteres 2x5kg", "categoria": "Equipamentos", "marca": "Athix", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Karina Duarte", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 143.91, "valor_total": 575.64, "custo_total": 319.6, "margem_valor": 256.04, "margem_pct": 44.48}, {"venda_id": 36, "data": "2025-05-06", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Óculos de Natação", "categoria": "Acessórios", "marca": "Speedo", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Karina Duarte", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 3, "valor_unitario": 89.9, "valor_total": 269.7, "custo_total": 119.7, "margem_valor": 150.0, "margem_pct": 55.62}, {"venda_id": 37, "data": "2025-05-08", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Tênis Caminhada Comfort", "categoria": "Calçados", "marca": "Olympikus", "regiao": "Nordeste", "estado": "PE", "cidade": "Recife", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Queila Fernandes", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 2, "valor_unitario": 219.9, "valor_total": 439.8, "custo_total": 239.8, "margem_valor": 200.0, "margem_pct": 45.48}, {"venda_id": 38, "data": "2025-05-08", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Whey Protein 900g", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sudeste", "estado": "RJ", "cidade": "Rio de Janeiro", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Marcelo Tavares", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 1, "valor_unitario": 134.91, "valor_total": 134.91, "custo_total": 79.9, "margem_valor": 55.01, "margem_pct": 40.78}, {"venda_id": 39, "data": "2025-05-14", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Tênis Running Pro X", "categoria": "Calçados", "marca": "Nike", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Bernardo Vieira", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 2, "valor_unitario": 382.42, "valor_total": 764.84, "custo_total": 499.8, "margem_valor": 265.04, "margem_pct": 34.65}, {"venda_id": 40, "data": "2025-05-14", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Prancha de Surf 6'2", "categoria": "Equipamentos", "marca": "Lost", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "José Carlos", "genero": "Feminino", "faixa_etaria": "45-54", "quantidade": 2, "valor_unitario": 1994.9, "valor_total": 3989.8, "custo_total": 2399.8, "margem_valor": 1590.0, "margem_pct": 39.85}, {"venda_id": 41, "data": "2025-05-20", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Bola de Vôlei Profissional", "categoria": "Equipamentos", "marca": "Mikasa", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Ximena Rezende", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 212.42, "valor_total": 637.26, "custo_total": 419.7, "margem_valor": 217.56, "margem_pct": 34.14}, {"venda_id": 42, "data": "2025-05-20", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Garrafa Térmica 1L", "categoria": "Acessórios", "marca": "Puma", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Vinícius Araújo", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 59.9, "valor_total": 179.7, "custo_total": 74.7, "margem_valor": 105.0, "margem_pct": 58.43}, {"venda_id": 43, "data": "2025-05-26", "mes_nome": "Maio", "trimestre": "Q2", "ano": 2025, "nome_produto": "Creatina 300g", "categoria": "Suplementos", "marca": "Max Titanium", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Gabriela Rocha", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 5, "valor_unitario": 104.9, "valor_total": 524.5, "custo_total": 249.5, "margem_valor": 275.0, "margem_pct": 52.43}, {"venda_id": 44, "data": "2025-06-02", "mes_nome": "Junho", "trimestre": "Q2", "ano": 2025, "nome_produto": "Tênis Running Pro X", "categoria": "Calçados", "marca": "Nike", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Ingrid Farias", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 4, "valor_unitario": 404.91, "valor_total": 1619.64, "custo_total": 999.6, "margem_valor": 620.04, "margem_pct": 38.28}, {"venda_id": 45, "data": "2025-06-05", "mes_nome": "Junho", "trimestre": "Q2", "ano": 2025, "nome_produto": "Mochila Esportiva 30L", "categoria": "Acessórios", "marca": "Adidas", "regiao": "Centro-Oeste", "estado": "DF", "cidade": "Brasília", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "Fábio Ramos", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 179.9, "valor_total": 539.7, "custo_total": 269.7, "margem_valor": 270.0, "margem_pct": 50.03}, {"venda_id": 46, "data": "2025-06-09", "mes_nome": "Junho", "trimestre": "Q2", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Diego Alves", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 83.9, "valor_total": 335.6, "custo_total": 139.6, "margem_valor": 196.0, "margem_pct": 58.4}, {"venda_id": 47, "data": "2025-06-19", "mes_nome": "Junho", "trimestre": "Q2", "ano": 2025, "nome_produto": "Chuteira Campo Elite", "categoria": "Calçados", "marca": "Nike", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Gabriela Rocha", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 5, "valor_unitario": 467.91, "valor_total": 2339.55, "custo_total": 1449.5, "margem_valor": 890.05, "margem_pct": 38.04}, {"venda_id": 48, "data": "2025-07-05", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Luva de Ciclismo", "categoria": "Acessórios", "marca": "Speedo", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Carla Mendes", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 49.9, "valor_total": 149.7, "custo_total": 59.7, "margem_valor": 90.0, "margem_pct": 60.12}, {"venda_id": 49, "data": "2025-07-06", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Whey Protein 900g", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Zeca Monteiro", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 4, "valor_unitario": 149.9, "valor_total": 599.6, "custo_total": 319.6, "margem_valor": 280.0, "margem_pct": 46.7}, {"venda_id": 50, "data": "2025-07-11", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Raquete de Tênis Pro", "categoria": "Equipamentos", "marca": "Wilson", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Vinícius Araújo", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 2, "valor_unitario": 509.92, "valor_total": 1019.84, "custo_total": 699.8, "margem_valor": 320.04, "margem_pct": 31.38}, {"venda_id": 51, "data": "2025-07-15", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Regata Treino Masculina", "categoria": "Vestuário", "marca": "Nike", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Henrique Dias", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 1, "valor_unitario": 62.91, "valor_total": 62.91, "custo_total": 29.9, "margem_valor": 33.01, "margem_pct": 52.47}, {"venda_id": 52, "data": "2025-07-19", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Tênis Running Pro X", "categoria": "Calçados", "marca": "Nike", "regiao": "Nordeste", "estado": "CE", "cidade": "Fortaleza", "canal_venda": "E-commerce", "forma_pagamento": "Boleto", "nome_cliente": "Danilo Freitas", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 3, "valor_unitario": 404.91, "valor_total": 1214.73, "custo_total": 749.7, "margem_valor": 465.03, "margem_pct": 38.28}, {"venda_id": 53, "data": "2025-07-25", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Creatina 300g", "categoria": "Suplementos", "marca": "Max Titanium", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Zeca Monteiro", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 1, "valor_unitario": 99.9, "valor_total": 99.9, "custo_total": 49.9, "margem_valor": 50.0, "margem_pct": 50.05}, {"venda_id": 54, "data": "2025-07-26", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Creatina 300g", "categoria": "Suplementos", "marca": "Max Titanium", "regiao": "Nordeste", "estado": "CE", "cidade": "Fortaleza", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Danilo Freitas", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 3, "valor_unitario": 84.92, "valor_total": 254.76, "custo_total": 149.7, "margem_valor": 105.06, "margem_pct": 41.24}, {"venda_id": 55, "data": "2025-07-30", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Raquete de Tênis Pro", "categoria": "Equipamentos", "marca": "Wilson", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Yasmin Batista", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 2, "valor_unitario": 599.9, "valor_total": 1199.8, "custo_total": 699.8, "margem_valor": 500.0, "margem_pct": 41.67}, {"venda_id": 56, "data": "2025-07-31", "mes_nome": "Julho", "trimestre": "Q3", "ano": 2025, "nome_produto": "Mochila Esportiva 30L", "categoria": "Acessórios", "marca": "Adidas", "regiao": "Nordeste", "estado": "CE", "cidade": "Fortaleza", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Danilo Freitas", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 179.9, "valor_total": 179.9, "custo_total": 89.9, "margem_valor": 90.0, "margem_pct": 50.03}, {"venda_id": 57, "data": "2025-08-04", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Otávio Lopes", "genero": "Masculino", "faixa_etaria": "45-54", "quantidade": 4, "valor_unitario": 62.9, "valor_total": 251.6, "custo_total": 111.6, "margem_valor": 140.0, "margem_pct": 55.64}, {"venda_id": 58, "data": "2025-08-09", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Jaqueta Corta-Vento", "categoria": "Vestuário", "marca": "The North Face", "regiao": "Sudeste", "estado": "RJ", "cidade": "Rio de Janeiro", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "João Barbosa", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 2, "valor_unitario": 349.9, "valor_total": 699.8, "custo_total": 379.8, "margem_valor": 320.0, "margem_pct": 45.73}, {"venda_id": 59, "data": "2025-08-12", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Legging Fitness Feminina", "categoria": "Vestuário", "marca": "Adidas", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Vinícius Araújo", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 110.42, "valor_total": 552.1, "custo_total": 299.5, "margem_valor": 252.6, "margem_pct": 45.75}, {"venda_id": 60, "data": "2025-08-13", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Eduarda Melo", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 53.91, "valor_total": 269.55, "custo_total": 139.5, "margem_valor": 130.05, "margem_pct": 48.25}, {"venda_id": 61, "data": "2025-08-14", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Mochila Esportiva 30L", "categoria": "Acessórios", "marca": "Adidas", "regiao": "Nordeste", "estado": "CE", "cidade": "Fortaleza", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Danilo Freitas", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 188.9, "valor_total": 188.9, "custo_total": 89.9, "margem_valor": 99.0, "margem_pct": 52.41}, {"venda_id": 62, "data": "2025-08-15", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Chuteira Society Speed", "categoria": "Calçados", "marca": "Puma", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Ximena Rezende", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 314.9, "valor_total": 1574.5, "custo_total": 799.5, "margem_valor": 775.0, "margem_pct": 49.22}, {"venda_id": 63, "data": "2025-08-19", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Tênis Trail Runner", "categoria": "Calçados", "marca": "Adidas", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Bruno Lima", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 3, "valor_unitario": 399.9, "valor_total": 1199.7, "custo_total": 659.7, "margem_valor": 540.0, "margem_pct": 45.01}, {"venda_id": 64, "data": "2025-08-23", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Óculos de Natação", "categoria": "Acessórios", "marca": "Speedo", "regiao": "Centro-Oeste", "estado": "DF", "cidade": "Brasília", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Fábio Ramos", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 89.9, "valor_total": 269.7, "custo_total": 119.7, "margem_valor": 150.0, "margem_pct": 55.62}, {"venda_id": 65, "data": "2025-08-24", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Prancha de Surf 6'2", "categoria": "Equipamentos", "marca": "Lost", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Eduarda Melo", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 3, "valor_unitario": 1899.9, "valor_total": 5699.7, "custo_total": 3599.7, "margem_valor": 2100.0, "margem_pct": 36.84}, {"venda_id": 66, "data": "2025-08-27", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Karina Duarte", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 71.91, "valor_total": 287.64, "custo_total": 139.6, "margem_valor": 148.04, "margem_pct": 51.47}, {"venda_id": 67, "data": "2025-08-28", "mes_nome": "Agosto", "trimestre": "Q3", "ano": 2025, "nome_produto": "Bola de Basquete Oficial", "categoria": "Equipamentos", "marca": "Wilson", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Tiago Correia", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 1, "valor_unitario": 230.9, "valor_total": 230.9, "custo_total": 119.9, "margem_valor": 111.0, "margem_pct": 48.07}, {"venda_id": 68, "data": "2025-09-01", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Regata Treino Masculina", "categoria": "Vestuário", "marca": "Nike", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "E-commerce", "forma_pagamento": "Boleto", "nome_cliente": "Vinícius Araújo", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 69.9, "valor_total": 349.5, "custo_total": 149.5, "margem_valor": 200.0, "margem_pct": 57.22}, {"venda_id": 69, "data": "2025-09-07", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Barra de Proteína (cx 12un)", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "E-commerce", "forma_pagamento": "Boleto", "nome_cliente": "Bernardo Vieira", "genero": "Masculino", "faixa_etaria": "25-34", "quantidade": 2, "valor_unitario": 79.9, "valor_total": 159.8, "custo_total": 79.8, "margem_valor": 80.0, "margem_pct": 50.06}, {"venda_id": 70, "data": "2025-09-11", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Hugo Pereira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 59.9, "valor_total": 239.6, "custo_total": 111.6, "margem_valor": 128.0, "margem_pct": 53.42}, {"venda_id": 71, "data": "2025-09-14", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Karina Duarte", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 2, "valor_unitario": 50.92, "valor_total": 101.84, "custo_total": 55.8, "margem_valor": 46.04, "margem_pct": 45.21}, {"venda_id": 72, "data": "2025-09-17", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Isotônico em Pó 1kg", "categoria": "Suplementos", "marca": "Gatorade", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "José Carlos", "genero": "Feminino", "faixa_etaria": "45-54", "quantidade": 3, "valor_unitario": 59.9, "valor_total": 179.7, "custo_total": 83.7, "margem_valor": 96.0, "margem_pct": 53.42}, {"venda_id": 73, "data": "2025-09-17", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Bicicleta Speed Aro 700", "categoria": "Equipamentos", "marca": "Caloi", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "E-commerce", "forma_pagamento": "Pix", "nome_cliente": "Aline Ferreira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 3, "valor_unitario": 3464.9, "valor_total": 10394.7, "custo_total": 6599.7, "margem_valor": 3795.0, "margem_pct": 36.51}, {"venda_id": 74, "data": "2025-09-19", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Chuteira Society Speed", "categoria": "Calçados", "marca": "Puma", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Elaine Costa", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 4, "valor_unitario": 314.9, "valor_total": 1259.6, "custo_total": 639.6, "margem_valor": 620.0, "margem_pct": 49.22}, {"venda_id": 75, "data": "2025-09-21", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Barra de Musculação 1,80m", "categoria": "Equipamentos", "marca": "Athix", "regiao": "Nordeste", "estado": "PE", "cidade": "Recife", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Queila Fernandes", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 2, "valor_unitario": 349.9, "valor_total": 699.8, "custo_total": 399.8, "margem_valor": 300.0, "margem_pct": 42.87}, {"venda_id": 76, "data": "2025-09-24", "mes_nome": "Setembro", "trimestre": "Q3", "ano": 2025, "nome_produto": "Tênis Caminhada Comfort", "categoria": "Calçados", "marca": "Olympikus", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Mariana Teixeira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 230.9, "valor_total": 923.6, "custo_total": 479.6, "margem_valor": 444.0, "margem_pct": 48.07}, {"venda_id": 77, "data": "2025-10-06", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Whey Protein 900g", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Mariana Teixeira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 3, "valor_unitario": 127.42, "valor_total": 382.26, "custo_total": 239.7, "margem_valor": 142.56, "margem_pct": 37.29}, {"venda_id": 78, "data": "2025-10-07", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Jaqueta Corta-Vento", "categoria": "Vestuário", "marca": "The North Face", "regiao": "Centro-Oeste", "estado": "DF", "cidade": "Brasília", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Fábio Ramos", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 1, "valor_unitario": 349.9, "valor_total": 349.9, "custo_total": 189.9, "margem_valor": 160.0, "margem_pct": 45.73}, {"venda_id": 79, "data": "2025-10-08", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Rafael Gomes", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 4, "valor_unitario": 79.9, "valor_total": 319.6, "custo_total": 139.6, "margem_valor": 180.0, "margem_pct": 56.32}, {"venda_id": 80, "data": "2025-10-09", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Ximena Rezende", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 2, "valor_unitario": 79.9, "valor_total": 159.8, "custo_total": 69.8, "margem_valor": 90.0, "margem_pct": 56.32}, {"venda_id": 81, "data": "2025-10-15", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Creatina 300g", "categoria": "Suplementos", "marca": "Max Titanium", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Ingrid Farias", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 99.9, "valor_total": 99.9, "custo_total": 49.9, "margem_valor": 50.0, "margem_pct": 50.05}, {"venda_id": 82, "data": "2025-10-18", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Bola de Futebol Campo", "categoria": "Equipamentos", "marca": "Nike", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Ingrid Farias", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 189.9, "valor_total": 189.9, "custo_total": 99.9, "margem_valor": 90.0, "margem_pct": 47.39}, {"venda_id": 83, "data": "2025-10-22", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Camiseta Dry Fit", "categoria": "Vestuário", "marca": "Under Armour", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Giovana Reis", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 4, "valor_unitario": 80.91, "valor_total": 323.64, "custo_total": 159.6, "margem_valor": 164.04, "margem_pct": 50.69}, {"venda_id": 84, "data": "2025-10-23", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Jaqueta Corta-Vento", "categoria": "Vestuário", "marca": "The North Face", "regiao": "Sudeste", "estado": "MG", "cidade": "Belo Horizonte", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Paulo Henrique", "genero": "Feminino", "faixa_etaria": "18-24", "quantidade": 2, "valor_unitario": 349.9, "valor_total": 699.8, "custo_total": 379.8, "margem_valor": 320.0, "margem_pct": 45.73}, {"venda_id": 85, "data": "2025-10-24", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Skate Completo Street", "categoria": "Equipamentos", "marca": "Progress", "regiao": "Sul", "estado": "PR", "cidade": "Curitiba", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Hugo Pereira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 5, "valor_unitario": 449.9, "valor_total": 2249.5, "custo_total": 1299.5, "margem_valor": 950.0, "margem_pct": 42.23}, {"venda_id": 86, "data": "2025-10-29", "mes_nome": "Outubro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Skate Completo Street", "categoria": "Equipamentos", "marca": "Progress", "regiao": "Nordeste", "estado": "PE", "cidade": "Recife", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Queila Fernandes", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 2, "valor_unitario": 449.9, "valor_total": 899.8, "custo_total": 519.8, "margem_valor": 380.0, "margem_pct": 42.23}, {"venda_id": 87, "data": "2025-11-01", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Camiseta Dry Fit", "categoria": "Vestuário", "marca": "Under Armour", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Boleto", "nome_cliente": "Olívia Santos", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 1, "valor_unitario": 94.4, "valor_total": 94.4, "custo_total": 39.9, "margem_valor": 54.5, "margem_pct": 57.73}, {"venda_id": 88, "data": "2025-11-03", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Barra de Proteína (cx 12un)", "categoria": "Suplementos", "marca": "Growth", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Bruno Lima", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 3, "valor_unitario": 71.91, "valor_total": 215.73, "custo_total": 119.7, "margem_valor": 96.03, "margem_pct": 44.51}, {"venda_id": 89, "data": "2025-11-12", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Regata Treino Masculina", "categoria": "Vestuário", "marca": "Nike", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "E-commerce", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Elaine Costa", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 5, "valor_unitario": 69.9, "valor_total": 349.5, "custo_total": 149.5, "margem_valor": 200.0, "margem_pct": 57.22}, {"venda_id": 90, "data": "2025-11-14", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Zeca Monteiro", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 2, "valor_unitario": 79.9, "valor_total": 159.8, "custo_total": 69.8, "margem_valor": 90.0, "margem_pct": 56.32}, {"venda_id": 91, "data": "2025-11-14", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Legging Fitness Feminina", "categoria": "Vestuário", "marca": "Adidas", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Pix", "nome_cliente": "Wesley Moura", "genero": "Feminino", "faixa_etaria": "45-54", "quantidade": 1, "valor_unitario": 116.91, "valor_total": 116.91, "custo_total": 59.9, "margem_valor": 57.01, "margem_pct": 48.76}, {"venda_id": 92, "data": "2025-11-15", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Garrafa Térmica 1L", "categoria": "Acessórios", "marca": "Puma", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Ingrid Farias", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 5, "valor_unitario": 59.9, "valor_total": 299.5, "custo_total": 124.5, "margem_valor": 175.0, "margem_pct": 58.43}, {"venda_id": 93, "data": "2025-11-16", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Legging Fitness Feminina", "categoria": "Vestuário", "marca": "Adidas", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Pix", "nome_cliente": "Elaine Costa", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 3, "valor_unitario": 136.4, "valor_total": 409.2, "custo_total": 179.7, "margem_valor": 229.5, "margem_pct": 56.09}, {"venda_id": 94, "data": "2025-11-19", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Faixa de Resistência Elástica", "categoria": "Acessórios", "marca": "Athix", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Zeca Monteiro", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 5, "valor_unitario": 39.9, "valor_total": 199.5, "custo_total": 74.5, "margem_valor": 125.0, "margem_pct": 62.66}, {"venda_id": 95, "data": "2025-11-24", "mes_nome": "Novembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Tênis Running Pro X", "categoria": "Calçados", "marca": "Nike", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Débito", "nome_cliente": "Vinícius Araújo", "genero": "Feminino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 382.42, "valor_total": 1912.1, "custo_total": 1249.5, "margem_valor": 662.6, "margem_pct": 34.65}, {"venda_id": 96, "data": "2025-12-08", "mes_nome": "Dezembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Nordeste", "estado": "BA", "cidade": "Salvador", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Elaine Costa", "genero": "Feminino", "faixa_etaria": "25-34", "quantidade": 1, "valor_unitario": 79.9, "valor_total": 79.9, "custo_total": 34.9, "margem_valor": 45.0, "margem_pct": 56.32}, {"venda_id": 97, "data": "2025-12-08", "mes_nome": "Dezembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Raquete de Tênis Pro", "categoria": "Equipamentos", "marca": "Wilson", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Marketplace", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "José Carlos", "genero": "Feminino", "faixa_etaria": "45-54", "quantidade": 5, "valor_unitario": 599.9, "valor_total": 2999.5, "custo_total": 1749.5, "margem_valor": 1250.0, "margem_pct": 41.67}, {"venda_id": 98, "data": "2025-12-14", "mes_nome": "Dezembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Kit Halteres 2x5kg", "categoria": "Equipamentos", "marca": "Athix", "regiao": "Sul", "estado": "RS", "cidade": "Porto Alegre", "canal_venda": "Loja Física", "forma_pagamento": "Cartão de Crédito", "nome_cliente": "Aline Ferreira", "genero": "Masculino", "faixa_etaria": "18-24", "quantidade": 5, "valor_unitario": 159.9, "valor_total": 799.5, "custo_total": 399.5, "margem_valor": 400.0, "margem_pct": 50.03}, {"venda_id": 99, "data": "2025-12-23", "mes_nome": "Dezembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Short Bermuda Esportivo", "categoria": "Vestuário", "marca": "Puma", "regiao": "Sudeste", "estado": "SP", "cidade": "São Paulo", "canal_venda": "Marketplace", "forma_pagamento": "Boleto", "nome_cliente": "Eduarda Melo", "genero": "Masculino", "faixa_etaria": "55+", "quantidade": 5, "valor_unitario": 83.9, "valor_total": 419.5, "custo_total": 174.5, "margem_valor": 245.0, "margem_pct": 58.4}, {"venda_id": 100, "data": "2025-12-28", "mes_nome": "Dezembro", "trimestre": "Q4", "ano": 2025, "nome_produto": "Garrafa Térmica 1L", "categoria": "Acessórios", "marca": "Puma", "regiao": "Nordeste", "estado": "PE", "cidade": "Recife", "canal_venda": "E-commerce", "forma_pagamento": "Boleto", "nome_cliente": "Queila Fernandes", "genero": "Feminino", "faixa_etaria": "35-44", "quantidade": 2, "valor_unitario": 59.9, "valor_total": 119.8, "custo_total": 49.8, "margem_valor": 70.0, "margem_pct": 58.43}];
+
+let chartTrend, chartCanal, chartRegiao, chartCategoria, chartFaixa;
+
+const fmtBRL = (v) => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
+const fmtBRLdec = (v) => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:2});
+const fmtNum = (v) => v.toLocaleString('pt-BR');
+
+const state = { categoria:'', produto:'', regiao:'', marca:'' };
+
+const MESES_ORDER = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+function uniqueSorted(arr){ return [...new Set(arr)].sort((a,b)=>a.localeCompare(b,'pt-BR')); }
+
+function populateSelect(id, values, current){
+  const el = document.getElementById(id);
+  const placeholder = el.options[0];
+  el.innerHTML = '';
+  el.appendChild(placeholder);
+  values.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    if(v === current) opt.selected = true;
+    el.appendChild(opt);
+  });
+}
+
+function getFiltered(excludeKey){
+  return RAW_DATA.filter(r=>{
+    if(excludeKey!=='categoria' && state.categoria && r.categoria!==state.categoria) return false;
+    if(excludeKey!=='produto' && state.produto && r.nome_produto!==state.produto) return false;
+    if(excludeKey!=='regiao' && state.regiao && r.regiao!==state.regiao) return false;
+    if(excludeKey!=='marca' && state.marca && r.marca!==state.marca) return false;
+    return true;
+  });
+}
+
+function refreshFilterOptions(){
+  populateSelect('f-categoria', uniqueSorted(getFiltered('categoria').map(r=>r.categoria)), state.categoria);
+  populateSelect('f-produto', uniqueSorted(getFiltered('produto').map(r=>r.nome_produto)), state.produto);
+  populateSelect('f-regiao', uniqueSorted(getFiltered('regiao').map(r=>r.regiao)), state.regiao);
+  populateSelect('f-marca', uniqueSorted(getFiltered('marca').map(r=>r.marca)), state.marca);
+}
+
+function renderTags(){
+  const container = document.getElementById('activeTags');
+  container.innerHTML = '';
+  const labels = {categoria:'Categoria', produto:'Produto', regiao:'Região', marca:'Marca'};
+  Object.keys(state).forEach(k=>{
+    if(state[k]){
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `${labels[k]}: ${state[k]} <button data-key="${k}">×</button>`;
+      tag.querySelector('button').onclick = ()=>{ state[k]=''; update(); };
+      container.appendChild(tag);
+    }
+  });
+}
+
+function computeKPIs(data){
+  const faturamento = data.reduce((s,r)=>s+r.valor_total,0);
+  const lucro = data.reduce((s,r)=>s+r.margem_valor,0);
+  const custo = data.reduce((s,r)=>s+r.custo_total,0);
+  const qtd = data.reduce((s,r)=>s+r.quantidade,0);
+  const ticket = data.length ? faturamento/data.length : 0;
+  const margemPct = faturamento ? (lucro/faturamento*100) : 0;
+
+  document.getElementById('kpiFaturamento').textContent = fmtBRL(faturamento);
+  document.getElementById('kpiFaturamentoSub').textContent = data.length + ' transações';
+  document.getElementById('kpiLucro').textContent = fmtBRL(lucro);
+  document.getElementById('kpiLucroSub').textContent = fmtBRL(custo) + ' em custos';
+  document.getElementById('kpiMargem').textContent = margemPct.toFixed(1)+'%';
+  document.getElementById('kpiTicket').textContent = fmtBRLdec(ticket);
+  document.getElementById('kpiCusto').textContent = fmtBRL(custo);
+  document.getElementById('kpiQtd').textContent = fmtNum(qtd);
+  document.getElementById('kpiQtdSub').textContent = 'itens comercializados';
+  document.getElementById('recCount').textContent = data.length + ' vendas';
+}
+
+const chartDefaults = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{
+    backgroundColor:'#1b1f2e', borderColor:'#262b3d', borderWidth:1,
+    titleColor:'#eef0f6', bodyColor:'#c7cbdb', padding:10, cornerRadius:8,
+    titleFont:{family:'Manrope', weight:'700', size:12}, bodyFont:{family:'JetBrains Mono', size:11.5}
+  }},
+  scales:{
+    x:{ grid:{color:'rgba(255,255,255,0.04)', drawTicks:false}, ticks:{color:'#8b91a7', font:{size:11}}, border:{color:'#262b3d'} },
+    y:{ grid:{color:'rgba(255,255,255,0.04)', drawTicks:false}, ticks:{color:'#8b91a7', font:{size:11}}, border:{display:false} }
+  }
+};
+
+function buildTrend(data){
+  const byMonth = {};
+  MESES_ORDER.forEach(m=>byMonth[m]={fat:0, lucro:0});
+  data.forEach(r=>{ if(byMonth[r.mes_nome]){ byMonth[r.mes_nome].fat += r.valor_total; byMonth[r.mes_nome].lucro += r.margem_valor; } });
+  const labels = MESES_ORDER.map(m=>m.slice(0,3));
+  const fatData = MESES_ORDER.map(m=>byMonth[m].fat);
+  const lucroData = MESES_ORDER.map(m=>byMonth[m].lucro);
+
+  const ctx = document.getElementById('chartTrend').getContext('2d');
+  const gradFat = ctx.createLinearGradient(0,0,0,280);
+  gradFat.addColorStop(0,'rgba(61,220,151,0.35)'); gradFat.addColorStop(1,'rgba(61,220,151,0)');
+
+  if(chartTrend) chartTrend.destroy();
+  chartTrend = new Chart(ctx, {
+    type:'line',
+    data:{ labels, datasets:[
+      { label:'Faturamento', data:fatData, borderColor:'#3ddc97', backgroundColor:gradFat, fill:true, tension:0.35, pointRadius:3, pointBackgroundColor:'#3ddc97', pointBorderColor:'#0c0e14', pointBorderWidth:2, borderWidth:2.5 },
+      { label:'Lucro', data:lucroData, borderColor:'#5b8cff', backgroundColor:'transparent', fill:false, tension:0.35, pointRadius:3, pointBackgroundColor:'#5b8cff', pointBorderColor:'#0c0e14', pointBorderWidth:2, borderWidth:2 }
+    ]},
+    options:{ ...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{...chartDefaults.plugins.tooltip, callbacks:{ label: (c)=> c.dataset.label+': '+fmtBRL(c.parsed.y) } }},
+      scales:{ ...chartDefaults.scales, y:{...chartDefaults.scales.y, ticks:{...chartDefaults.scales.y.ticks, callback:(v)=>'R$'+(v/1000).toFixed(0)+'k'}} }
+    }
+  });
+}
+
+function buildCanal(data){
+  const map = {};
+  data.forEach(r=>{ map[r.canal_venda]=(map[r.canal_venda]||0)+r.valor_total; });
+  const labels = Object.keys(map);
+  const values = Object.values(map);
+  const colors = ['#3ddc97','#5b8cff','#ff8a5b','#ff5c7a'];
+
+  if(chartCanal) chartCanal.destroy();
+  chartCanal = new Chart(document.getElementById('chartCanal'), {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data:values, backgroundColor:colors, borderColor:'#151824', borderWidth:3, hoverOffset:6 }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'68%',
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#c7cbdb', font:{family:'Manrope', size:11.5}, usePointStyle:true, pointStyle:'circle', padding:14 } },
+        tooltip:{ ...chartDefaults.plugins.tooltip, callbacks:{ label:(c)=> c.label+': '+fmtBRL(c.parsed) } } }
+    }
+  });
+}
+
+function buildRegiao(data){
+  const map = {};
+  data.forEach(r=>{ map[r.regiao]=(map[r.regiao]||0)+r.valor_total; });
+  const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+
+  if(chartRegiao) chartRegiao.destroy();
+  chartRegiao = new Chart(document.getElementById('chartRegiao'), {
+    type:'bar',
+    data:{ labels:entries.map(e=>e[0]), datasets:[{ data:entries.map(e=>e[1]), backgroundColor:'#5b8cff', borderRadius:6, maxBarThickness:34 }] },
+    options:{ ...chartDefaults, indexAxis:'y',
+      plugins:{...chartDefaults.plugins, tooltip:{...chartDefaults.plugins.tooltip, callbacks:{ label:(c)=>fmtBRL(c.parsed.x) }}},
+      scales:{ x:{...chartDefaults.scales.y, ticks:{...chartDefaults.scales.x.ticks, callback:(v)=>'R$'+(v/1000).toFixed(0)+'k'}}, y:{...chartDefaults.scales.x, grid:{display:false}} }
+    }
+  });
+}
+
+function buildCategoria(data){
+  const map = {};
+  data.forEach(r=>{ if(!map[r.categoria]) map[r.categoria]={fat:0,lucro:0}; map[r.categoria].fat+=r.valor_total; map[r.categoria].lucro+=r.margem_valor; });
+  const labels = Object.keys(map);
+  const pct = labels.map(l => map[l].fat ? (map[l].lucro/map[l].fat*100) : 0);
+
+  if(chartCategoria) chartCategoria.destroy();
+  chartCategoria = new Chart(document.getElementById('chartCategoria'), {
+    type:'bar',
+    data:{ labels, datasets:[{ data:pct, backgroundColor:'#3ddc97', borderRadius:6, maxBarThickness:34 }] },
+    options:{ ...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{...chartDefaults.plugins.tooltip, callbacks:{ label:(c)=>c.parsed.y.toFixed(1)+'% margem' }}},
+      scales:{ ...chartDefaults.scales, y:{...chartDefaults.scales.y, ticks:{...chartDefaults.scales.y.ticks, callback:(v)=>v+'%'}} }
+    }
+  });
+}
+
+function buildFaixa(data){
+  const order = ['18-24','25-34','35-44','45-54','55+'];
+  const map = {}; order.forEach(o=>map[o]=0);
+  data.forEach(r=>{ if(map[r.faixa_etaria]!==undefined) map[r.faixa_etaria]+=r.valor_total; });
+
+  if(chartFaixa) chartFaixa.destroy();
+  chartFaixa = new Chart(document.getElementById('chartFaixa'), {
+    type:'bar',
+    data:{ labels:order, datasets:[{ data:order.map(o=>map[o]), backgroundColor:'#ff8a5b', borderRadius:6, maxBarThickness:34 }] },
+    options:{ ...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{...chartDefaults.plugins.tooltip, callbacks:{ label:(c)=>fmtBRL(c.parsed.y) }}},
+      scales:{ ...chartDefaults.scales, y:{...chartDefaults.scales.y, ticks:{...chartDefaults.scales.y.ticks, callback:(v)=>'R$'+(v/1000).toFixed(0)+'k'}} }
+    }
+  });
+}
+
+function buildTopProdutos(data){
+  const map = {};
+  data.forEach(r=>{ if(!map[r.nome_produto]) map[r.nome_produto]={margem:0, fat:0}; map[r.nome_produto].margem+=r.margem_valor; map[r.nome_produto].fat+=r.valor_total; });
+  const top = Object.entries(map).sort((a,b)=>b[1].margem-a[1].margem).slice(0,5);
+  const maxMargem = top.length ? top[0][1].margem : 1;
+  const tbody = document.getElementById('tblTopProdutos');
+  tbody.innerHTML = top.map(([name,v],i)=>`
+    <tr>
+      <td><span class="rank">${i+1}</span></td>
+      <td>${name}<div class="bar-mini"><i style="width:${(v.margem/maxMargem*100).toFixed(0)}%"></i></div></td>
+      <td class="num up">${fmtBRL(v.margem)}</td>
+      <td class="num">${fmtBRL(v.fat)}</td>
+    </tr>`).join('') || emptyRow(4);
+}
+
+function buildTopClientes(data){
+  const map = {};
+  data.forEach(r=>{ if(!map[r.nome_cliente]) map[r.nome_cliente]={n:0, total:0}; map[r.nome_cliente].n+=1; map[r.nome_cliente].total+=r.valor_total; });
+  const top = Object.entries(map).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
+  const tbody = document.getElementById('tblTopClientes');
+  tbody.innerHTML = top.map(([name,v],i)=>`
+    <tr>
+      <td><span class="rank">${i+1}</span></td>
+      <td>${name}</td>
+      <td class="num">${v.n}</td>
+      <td class="num up">${fmtBRL(v.total)}</td>
+    </tr>`).join('') || emptyRow(4);
+}
+
+function buildLowMargin(data){
+  const map = {};
+  data.forEach(r=>{
+    if(!map[r.nome_produto]) map[r.nome_produto]={categoria:r.categoria, marca:r.marca, fat:0, margemSum:0, n:0};
+    map[r.nome_produto].fat += r.valor_total;
+    map[r.nome_produto].margemSum += r.margem_pct;
+    map[r.nome_produto].n += 1;
+  });
+  const arr = Object.entries(map).map(([name,v])=>({name, ...v, margemAvg: v.margemSum/v.n}));
+  arr.sort((a,b)=>a.margemAvg-b.margemAvg);
+  const bottom = arr.slice(0,6);
+  const tbody = document.getElementById('tblLowMargin');
+  tbody.innerHTML = bottom.map(v=>`
+    <tr>
+      <td>${v.name}</td>
+      <td>${v.categoria}</td>
+      <td>${v.marca}</td>
+      <td class="num down">${v.margemAvg.toFixed(1)}%</td>
+      <td class="num">${fmtBRL(v.fat)}</td>
+    </tr>`).join('') || emptyRow(5);
+}
+
+function emptyRow(cols){ return `<tr><td colspan="${cols}" style="text-align:center; color:var(--text-faint); padding:24px;">Sem dados para os filtros selecionados</td></tr>`; }
+
+function update(){
+  refreshFilterOptions();
+  renderTags();
+  const data = getFiltered(null);
+  computeKPIs(data);
+  buildTrend(data);
+  buildCanal(data);
+  buildRegiao(data);
+  buildCategoria(data);
+  buildFaixa(data);
+  buildTopProdutos(data);
+  buildTopClientes(data);
+  buildLowMargin(data);
+}
+
+document.getElementById('f-categoria').addEventListener('change', e=>{ state.categoria = e.target.value; update(); });
+document.getElementById('f-produto').addEventListener('change', e=>{ state.produto = e.target.value; update(); });
+document.getElementById('f-regiao').addEventListener('change', e=>{ state.regiao = e.target.value; update(); });
+document.getElementById('f-marca').addEventListener('change', e=>{ state.marca = e.target.value; update(); });
+document.getElementById('btnReset').addEventListener('click', ()=>{ state.categoria=''; state.produto=''; state.regiao=''; state.marca=''; update(); });
+
+update();
+</script>
+</body>
+</html>
