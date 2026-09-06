@@ -114,7 +114,8 @@ O arquivo `dashboard/pipeline-vendas.pbix` pode ser aberto diretamente no Power 
 
 ## 🖼️ Prévia do dashboard
 
-*(Inserir aqui um print ou GIF do painel final)*
+<img width="1877" height="851" alt="image" src="https://github.com/user-attachments/assets/dcb2da28-0108-4c25-bd55-0d3b2ef9fd4c" />
+<img width="1882" height="846" alt="image" src="https://github.com/user-attachments/assets/cb27f488-d304-4cee-8819-98a5b4678b3a" />
 
 ---
 
