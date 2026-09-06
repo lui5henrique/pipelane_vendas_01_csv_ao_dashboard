@@ -1,125 +1,53 @@
-# 📊 Pipeline de Vendas — Do CSV ao Dashboard
+<h1 align="center">Painel de Vendas — Gestão de Loja</h1>
 
-Pipeline de dados end-to-end para análise de vendas: ingestão de arquivos CSV brutos, tratamento em Python e entrega de um dashboard interativo em Power BI com visão de faturamento, ticket médio, margem e ranking de produtos.
+<p align="center">Dashboard interativo de vendas em uma única página HTML, com filtros, KPIs e gráficos</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/HTML5-orange" alt="HTML5">
+  <img src="https://img.shields.io/badge/CSS3-blue" alt="CSS3">
+  <img src="https://img.shields.io/badge/JavaScript-yellow" alt="JavaScript">
+  <img src="https://img.shields.io/badge/Chart.js-4.4.1-informational" alt="Chart.js">
+</p>
 
 > ⚠️ **Dados fictícios**, utilizados apenas para fins de demonstração técnica.
 
----
+## Sobre o projeto
 
-## 🎯 Objetivo
+Dashboard de gestão de vendas de uma loja de artigos esportivos, entregue como um único arquivo HTML — sem backend, sem build, sem dependências além de uma biblioteca de gráficos carregada via CDN. Os dados (100 vendas fictícias de 2025, com produto, categoria, marca, região, cliente e valores) ficam embutidos diretamente no próprio arquivo.
 
-Transformar bases de vendas brutas e dispersas em um modelo analítico confiável, permitindo à gestão comparar desempenho mês a mês e identificar produtos e regiões de maior impacto — sem depender de planilhas manuais.
+<img width="1877" height="851" alt="Captura de tela 2026-09-06 101730" src="https://github.com/user-attachments/assets/9d0b9dbe-48d4-470d-bd37-69987337675d" />
+<img width="1882" height="846" alt="Captura de tela 2026-09-06 101859" src="https://github.com/user-attachments/assets/d1403598-32ed-4722-86d7-cd68bbd5f154" />
 
----
 
-## 🧱 Arquitetura do pipeline
+## Funcionalidades
 
-```
-CSV bruto (vendas)
-      │
-      ▼
-[1] Extração dos arquivos brutos
-      │
-      ▼
-[2] Limpeza e padronização (Python / pandas)
-      │
-      ▼
-[3] Modelagem em estrela (fato vendas + dimensões)
-      │
-      ▼
-[4] Medidas DAX (receita, ticket médio, margem)
-      │
-      ▼
-[5] Dashboard interativo (Power BI) — por região e período
-```
+- KPIs: faturamento total, lucro total, margem de lucro (%), ticket médio, custo total e quantidade vendida.
+- Filtros por categoria, produto, região e marca, com tags removíveis para os filtros ativos.
+- Gráficos (Chart.js): faturamento e lucro por mês, vendas por canal, vendas por região, margem por categoria e perfil por faixa etária.
+- Tabelas de Top 5 Produtos (por margem), Top 5 Clientes e Produtos com Menor Margem.
 
-### Etapas detalhadas
+## Tecnologias
 
-**1. Extração**
-Leitura dos arquivos CSV de origem contendo os registros brutos de vendas (pedidos, itens, valores, datas, região).
+- HTML5 / CSS3 / JavaScript (vanilla, sem framework)
+- [Chart.js](https://www.chartjs.org/) (via CDN) — gráficos
 
-**2. Limpeza e padronização (Python / pandas)**
-- Tratamento de valores nulos e duplicados
-- Padronização de tipos (datas, moedas, categorias)
-- Validação de consistência entre arquivos
+## Como executar
 
-**3. Modelagem em estrela**
-- Tabela fato: `fato_vendas`
-- Tabelas dimensão: `dim_produto`, `dim_cliente`, `dim_regiao`, `dim_calendario`
-- Relacionamentos otimizados para performance no Power BI
-
-**4. Medidas DAX**
-- Receita total e por período
-- Ticket médio
-- Margem (%) por produto/categoria
-- Variação mês a mês (MoM)
-
-**5. Dashboard**
-Painel interativo com filtros por região e período, ranking de produtos e comparativo de faturamento.
-
----
-
-## 📈 Resultados
-
-- Consolidação de **[X]** mil linhas de dados brutos em um modelo único
-- Visão única de faturamento com comparativo mês a mês
-- Redução do tempo de análise manual em planilhas de **[X]** para poucos minutos de refresh
-
-*(Substituir os campos `[X]` pelos números reais do projeto.)*
-
----
-
-## 🛠️ Tecnologias utilizadas
-
-| Categoria | Ferramentas |
-|---|---|
-| Linguagem | Python (pandas) |
-| Consulta/Modelagem | SQL |
-| Visualização | Power BI, DAX |
-| Versionamento | Git / GitHub |
-
----
-
-## 📂 Estrutura do repositório
-
-```
-pipeline-vendas/
-├── data/               # dados brutos e tratados (ou amostra fictícia)
-├── notebooks/          # exploração e tratamento em Python
-├── src/                # scripts de ETL
-├── dashboard/          # arquivo .pbix do Power BI
-├── images/             # prints do dashboard
-└── README.md
-```
-
----
-
-## ▶️ Como executar
+Por ser um único arquivo estático, basta abrir direto no navegador:
 
 ```bash
-# Clonar o repositório
-git clone https://github.com/lui5henrique/NOME-DO-REPO.git
-cd NOME-DO-REPO
-
-# Instalar dependências
-pip install -r requirements.txt
-
-# Executar o pipeline de tratamento
-python src/etl.py
+git clone https://github.com/lui5henrique/pipelane_vendas_01_csv_ao_dashboard.git
+cd pipelane_vendas_01_csv_ao_dashboard
 ```
 
-O arquivo `dashboard/pipeline-vendas.pbix` pode ser aberto diretamente no Power BI Desktop.
+Depois é só abrir o `index.html` (duplo clique ou arrastar para o navegador). Não é necessário servidor local, pois os dados já estão embutidos no arquivo — não há `fetch` de arquivos externos.
 
----
+## Estrutura do projeto
 
-## 🖼️ Prévia do dashboard
+```
+index.html    dashboard completo: estrutura, estilo e dados/JS embutidos no mesmo arquivo
+```
 
-<img width="1877" height="851" alt="image" src="https://github.com/user-attachments/assets/dcb2da28-0108-4c25-bd55-0d3b2ef9fd4c" />
-<img width="1882" height="846" alt="image" src="https://github.com/user-attachments/assets/cb27f488-d304-4cee-8819-98a5b4678b3a" />
+## Autor
 
----
-
-## 👤 Autor
-
-**Luis Henrique** — Analista de Dados e BI
-[Portfólio](https://luishenrique-analyticsdata.lovable.app/) · [LinkedIn](#) · [GitHub](https://github.com/lui5henrique)
+**Luis Henrique** — [@lui5henrique](https://github.com/lui5henrique)
